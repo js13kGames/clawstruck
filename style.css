@@ -1,0 +1,25 @@
+/* Menghapus margin dan padding bawaan browser */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: sans-serif; /* Menambahkan font dasar */
+}
+
+body {
+    /* Atur warna latar belakang untuk bagian bawah */
+    background-color: #1a1a1a; /* Contoh: warna abu-abu gelap */
+}
+
+/* Ini adalah class untuk wadah gambar kita */
+.background-top {
+    /* Mengatur tinggi elemen menjadi 50% dari tinggi viewport/layar */
+    height: 60vh; 
+    width: 100%;
+
+    /* Pindahkan semua properti background ke sini */
+    background-image: url('assets/background/1.png'); /* Pastikan nama file benar */
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
