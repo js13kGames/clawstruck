@@ -2,7 +2,7 @@
 
 ![Clawstruck Banner](/imagenonassets/ClawstruckHeader.png)
 
-find and vote me on: https://js13kgames.com/2025/games/clawstruck
+vote and try playing it on: https://js13kgames.com/2025/games/clawstruck
 
 
 
