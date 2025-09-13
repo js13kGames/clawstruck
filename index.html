@@ -7,8 +7,273 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="background-top"></div>
 
-    <script src="index.js" defer></script>
+    <div class="game-container">
+        <div class="left-container"></div>
+        <div class="right-container">
+            <div class="top-right-container">
+                <div class="cat-container">
+                    <img id="cat-character" src="assets/cat.webp" alt="cat Character">
+                </div>
+                <div class="cat-text-container">i'll destroy you with my paw</div>
+            </div>
+            <div class="bottom-right-container">
+                <div class="heart-container"></div>
+                <div class="time-score-container"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const leftContainer = document.querySelector('.left-container');
+            const heartContainer = document.querySelector('.heart-container');
+            const timeScoreContainer = document.querySelector('.time-score-container');
+
+            // Game State Variables
+            let playerLives = 3;
+            const maxLives = 3;
+            let startTime = Date.now();
+            let timerInterval;
+            let pawAttackInterval;
+
+            // Grid Setup
+            const gridRows = 8;
+            const gridCols = 6;
+            const totalSquares = gridRows * gridCols;
+            const allSquares = [];
+
+            for (let i = 0; i < totalSquares; i++) {
+                const square = document.createElement('div');
+                
+                square.classList.add('grid-square');
+
+                const row = Math.floor(i / gridCols);
+                const col = i % gridCols;
+
+                square.classList.add((row + col) % 2 === 0 ? 'light-tile' : 'dark-tile');
+                
+                leftContainer.appendChild(square);
+                allSquares.push(square);
+            }
+
+            let stickmanRow = 2;
+            let stickmanCol = 3;
+
+            const stickman = document.createElement('img');
+            stickman.src = 'assets/stickman.webp';
+            stickman.alt = 'Stickman Character';
+            stickman.classList.add('stickman-character');
+
+            function drawStickman() {
+                const targetIndex = stickmanRow * gridCols + stickmanCol;
+                const targetSquare = allSquares[targetIndex];
+                targetSquare.appendChild(stickman);
+            }
+
+            function drawHearts(){
+                heartContainer.innerHTML = '';
+                for(let i = 0; i < playerLives; i++) {
+                    const heart = document.createElement('img');
+                    heart.classList.add('heart-img');
+
+                    if (i < playerLives) {
+                        heart.src = 'assets/heart-full.webp';
+                    } else {
+                        heart.src = 'assets/heart-empty.webp';
+                    }
+
+                    heartContainer.appendChild(heart);
+                }
+            }
+
+            function updateTimer() {
+                const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsedTime / 60).toString().padStart(2, '0');
+                const seconds = (elapsedTime % 60).toString().padStart(2, '0');
+                timeScoreContainer.textContent = `Time Survived: ${minutes}:${seconds}`;
+            }
+
+            function handleKeyPress(event) {
+
+                switch(event.key) {
+                    case 'w':
+                    case 'ArrowUp':
+                        stickmanRow = Math.max(0, stickmanRow - 1);
+                        break;
+                    case 's':
+                    case 'ArrowDown':
+                        stickmanRow = Math.min(gridRows - 1, stickmanRow + 1);
+                        break;
+                    case 'a':
+                    case 'ArrowLeft':
+                        stickmanCol = Math.max(0, stickmanCol - 1);
+                        break;
+                    case 'd':
+                    case 'ArrowRight':
+                        stickmanCol = Math.min(gridCols - 1, stickmanCol + 1);
+                        break;
+                    default:
+                        return; 
+                }
+
+                drawStickman();
+            }
+
+            function createPawAttack() {
+                if (playerLives <= 0) return;
+                const directions = ['right', 'left', 'top', 'bottom'];
+                const attackDirection = directions[Math.floor(Math.random() * directions.length)];
+
+                let attackRow, attackCol, attackLength;
+                const attackedSquares = [];
+
+                switch(attackDirection) {
+                    case 'right': case 'left':
+                        attackRow = Math.floor(Math.random() * gridRows);
+                        attackLength = Math.floor(Math.random() * (gridCols - 2)) + 3;
+                        break;
+                    case 'top': case 'bottom':
+                        attackCol = Math.floor(Math.random() * gridCols);
+                        attackLength = Math.floor(Math.random() * (gridRows - 2)) + 3;
+                        break;
+                }
+
+                for (let i = 0; i < attackLength; i++) {
+                    let squareIndex;
+                     switch(attackDirection) {
+                        case 'right': squareIndex = attackRow * gridCols + (gridCols - 1 - i); break;
+                        case 'left':  squareIndex = attackRow * gridCols + i; break;
+                        case 'top':   squareIndex = i * gridCols + attackCol; break;
+                        case 'bottom':squareIndex = (gridRows - 1 - i) * gridCols + attackCol; break;
+                    }
+                    if (allSquares[squareIndex]) {
+                        allSquares[squareIndex].classList.add('warning-tile');
+                        attackedSquares.push({row: Math.floor(squareIndex / gridCols), col: squareIndex % gridCols});
+                    }
+                }
+
+                setTimeout(() => {
+                    attackedSquares.forEach(sq => {
+                        const idx = sq.row * gridCols + sq.col;
+                        if (allSquares[idx]) {
+                           allSquares[idx].classList.remove('warning-tile');
+                        }
+                    });
+
+                    const pawContainer = document.createElement('div');
+                    pawContainer.className = 'paw-container';
+                    const pawImage = document.createElement('img');
+                    pawImage.className = 'paw-image';
+                    pawImage.src = 'assets/paw.webp';
+                    const pawArm = document.createElement('div');
+                    pawArm.className = 'paw-arm';
+                    
+                    leftContainer.appendChild(pawContainer);
+                    
+                    // FIX: This switch case now correctly sets up vertical animations
+                    switch(attackDirection) {
+                        case 'right':
+                            pawContainer.style.flexDirection = 'row-reverse';
+                            pawContainer.appendChild(pawArm);
+                            pawContainer.appendChild(pawImage);
+                            pawContainer.style.top = `${attackRow * 50}px`;
+                            pawContainer.style.right = '0px';
+                            pawImage.style.transform = 'rotate(0deg)';
+                            break;
+                        case 'left':
+                             pawContainer.appendChild(pawArm);
+                             pawContainer.appendChild(pawImage);
+                             pawContainer.style.top = `${attackRow * 50}px`;
+                             pawContainer.style.left = '0px';
+                             pawImage.style.transform = 'rotate(180deg)';
+                            break;
+                        case 'bottom':
+                            pawContainer.style.flexDirection = 'column-reverse';
+                            pawContainer.appendChild(pawArm);
+                            pawContainer.appendChild(pawImage);
+                            pawContainer.style.left = `${attackCol * 50}px`;
+                            pawContainer.style.bottom = '0px';
+                            pawContainer.style.width = '50px';
+                            pawContainer.style.alignItems = 'center'; // Vertical alignment fix
+                            pawArm.style.width = '25px';
+                            pawArm.style.height = '0';
+                            pawImage.style.transform = 'rotate(90deg)';
+                            break;
+                        case 'top':
+                             pawContainer.style.flexDirection = 'column';
+                             pawContainer.appendChild(pawArm);
+                             pawContainer.appendChild(pawImage);
+                             pawContainer.style.left = `${attackCol * 50}px`;
+                             pawContainer.style.top = '0px';
+                             pawContainer.style.width = '50px';
+                             pawContainer.style.alignItems = 'center'; // Vertical alignment fix
+                             pawArm.style.width = '25px';
+                             pawArm.style.height = '0';
+                             pawImage.style.transform = 'rotate(270deg)';
+                            break;
+                    }
+
+                    setTimeout(() => {
+                        if (attackDirection === 'top' || attackDirection === 'bottom') {
+                            pawArm.style.height = `${(attackLength - 1) * 50}px`;
+                        } else {
+                            pawArm.style.width = `${(attackLength - 1) * 50}px`;
+                        }
+
+                        setTimeout(() => {
+                            const hit = attackedSquares.some(sq => sq.row === stickmanRow && sq.col === stickmanCol);
+
+                            if (hit) {
+                                playerLives--;
+                                drawHearts();
+                                if (playerLives <= 0) endGame();
+                            }
+
+                            setTimeout(() => {
+                                if (attackDirection === 'top' || attackDirection === 'bottom') {
+                                    pawArm.style.height = '0';
+                                } else {
+                                    pawArm.style.width = '0';
+                                }
+                                setTimeout(() => pawContainer.remove(), 200);
+                            }, 300);
+
+                        }, 120); // Faster attack
+
+                    }, 100); 
+
+                }, 1200); // Shorter warning time
+            }
+
+            // function pawAttackLoop() {
+            //     const randomDelay = Math.random() * 1500 + 2000;
+            //     pawAttackTimeout = setTimeout(() => {
+            //         if (playerLives > 0) {
+            //             createPawAttack();
+            //             pawAttackLoop();
+            //         }
+            //     }, randomDelay);
+            // }
+            
+            function endGame() {
+                clearInterval(pawAttackInterval); // Clear the interval
+                clearInterval(timerInterval);
+                document.removeEventListener('keydown', handleKeyPress);
+                const catText = document.querySelector('.cat-text-container');
+                catText.textContent = "GAME OVER!";
+            }
+
+            function startGame(){
+                drawStickman();
+                drawHearts();
+                timerInterval = setInterval(updateTimer, 1000);
+                updateTimer();
+                document.addEventListener('keydown', handleKeyPress);
+                pawAttackInterval = setInterval(createPawAttack, 1000);
+            }
+
+            startGame();
+        });
+    </script>
 </body>
 </html>
