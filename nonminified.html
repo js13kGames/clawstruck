@@ -604,7 +604,7 @@
                 updateTimer();
                 dialogueInterval = setInterval(changeCatDialogue, 4000);
                 changeCatDialogue();
-                document.removeEventListener('keydown', handleKeyPress); // Remove old listener before adding new one
+                document.removeEventListener('keydown', handleKeyPress); 
                 document.addEventListener('keydown', handleKeyPress);
                 pawAttackInterval = setInterval(createPawAttack, currentAttackInterval);
             }
