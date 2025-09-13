@@ -1,4 +1,262 @@
-<!doctypehtml><html lang=en><meta charset=UTF-8><meta content="width=device-width,initial-scale=1"name=viewport><title>Clawstruck</title><style>body,html{margin:0;padding:0;height:100%;font-family:'Courier New',Courier,monospace;font-weight:700;color:#2d1b27}body{background-color:#31293e;justify-content:center;align-items:center;display:flex}.game-container{display:flex;justify-content:space-between;height:450px;width:550px;border:8px solid #5f575e;background-color:#160d13;padding:20px}.left-container{width:300px;background-color:none;margin-right:20px;margin-top:auto;margin-bottom:auto;display:grid;grid-template-columns:repeat(6,50px);grid-template-rows:repeat(8,50px);position:relative;overflow:hidden}.grid-square{width:50px;height:50px;box-sizing:border-box;position:relative}.grid-square.warning-tile::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background-color:rgba(255,0,0,.5);animation:flash-warning .4s infinite alternate}@keyframes flash-warning{from{opacity:.7}to{opacity:.2}}.light-tile{background-image:url(assets/light-tile.webp);background-size:cover;display:flex;justify-content:center;align-items:center;image-rendering:pixelated}.dark-tile{background-image:url(assets/dark-tile.webp);background-size:cover;display:flex;justify-content:center;align-items:center;image-rendering:pixelated}.stickman-character{width:30px;height:30px;image-rendering:pixelated}.right-container{display:flex;flex-direction:column;align-items:center;width:230px;gap:5px;box-sizing:border-box;background-color:none}.paw-container{position:absolute;display:flex;align-items:center}.paw-arm{height:25px;background-color:#160d13;width:0;transition:width .12s cubic-bezier(.5,0,.1,1),height .12s cubic-bezier(.5,0,.1,1)}.paw-image{width:40px;height:40px;image-rendering:pixelated;flex-shrink:0;position:relative;z-index:2}.top-right-container{flex:2;background:url(assets/card1.webp);background-position:center;background-repeat:no-repeat;image-rendering:pixelated;background-size:auto;width:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:0;gap:0}.cat-container{width:100%;height:100%;display:flex;flex:1;justify-content:center;align-items:center;padding:10px 10px}.cat-text-container{height:fit-content;flex:1;padding-top:10px;justify-content:center;align-items:center;text-align:center}#cat-character{width:180px;image-rendering:pixelated;animation:hover-effect 2s infinite alternate ease-in-out}@keyframes hover-effect{from{transform:translate(0,10px)}to{transform:translate(0,-10px)}}.bottom-right-container{flex:1;width:100%;background:url(assets/card2.webp);background-position:center;background-repeat:no-repeat;image-rendering:pixelated;background-size:auto;display:flex;justify-content:center;align-items:center;flex-direction:column;gap:20px}.heart-container{width:80%;display:flex;justify-content:space-around;align-items:center}.heart-img{width:44px;height:44px;image-rendering:pixelated}.time-score-container{font-size:14px;width:80%;text-align:center}.restart-button{background-image:url(assets/button-normal.webp);background-color:transparent;color:#a69998;border:none;padding:10px 20px;font-family:'Courier New',Courier,monospace;font-weight:700;font-size:16px;cursor:pointer;box-shadow:none;transition:all .1s ease-in-out}.restart-button:hover{background-image:url(assets/button-hover.webp)}.restart-button:active{background-image:url(assets/button-pressed.webp);transform:translateY(4px)}</style><div class=game-container><div class=left-container></div><div class=right-container><div class=top-right-container><div class=cat-container><img alt="cat Character"id=cat-character src=assets/cat.webp></div><div class=cat-text-container>i'll destroy you with my paw</div></div><div class=bottom-right-container><div class=heart-container></div><div class=time-score-container></div></div></div></div><script>document.addEventListener('DOMContentLoaded', () => {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clawstruck</title>
+    <style>
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            color: #2d1b27;
+        }
+
+        body {
+            background-color: #31293e; 
+            justify-content: center;
+            align-items: center;
+            display: flex;
+        }
+
+        .game-container {
+            display: flex;
+            justify-content: space-between;
+            height: 450px; 
+            width: 550px;  
+            border: 8px solid #5f575e;
+            background-color: #160d13; 
+            padding: 20px; 
+            /* box-sizing: border-box; */
+        }
+
+        .left-container {
+            width: 300px;
+            background-color: none; 
+            margin-right: 20px; 
+            margin-top: auto;
+            margin-bottom: auto;
+            display: grid;
+            grid-template-columns: repeat(6, 50px);
+            grid-template-rows: repeat(8, 50px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .grid-square {
+            width: 50px;
+            height: 50px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .grid-square.warning-tile::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 0, 0, 0.5);
+            animation: flash-warning 0.4s infinite alternate;
+        }
+
+        @keyframes flash-warning {
+            from { opacity: 0.7; }
+            to { opacity: 0.2; }
+        }
+
+        .light-tile{
+            background-image: url('assets/light-tile.webp');
+            background-size: cover;
+            display: flex;
+            justify-content: center;   
+            align-items: center;
+            image-rendering: pixelated;
+        }
+
+        .dark-tile{
+            background-image: url('assets/dark-tile.webp');
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            image-rendering: pixelated;
+        }
+
+        .stickman-character {
+            width: 30px;
+            height: 30px;
+            image-rendering: pixelated;
+        }
+
+
+        .right-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 230px;
+            gap: 5px;
+            box-sizing: border-box;
+            background-color: none;
+        }
+
+        .paw-container {
+            position: absolute;
+            /* height: 40px; */
+            display: flex; 
+            align-items: center;
+        }
+
+        .paw-arm {
+            height: 25px;
+            background-color: #160d13;
+            width: 0;
+            transition: width 0.12s cubic-bezier(0.5, 0, 0.1, 1), height 0.12s cubic-bezier(0.5, 0, 0.1, 1);
+        }
+
+        .paw-image {
+            width: 40px;
+            height: 40px;
+            image-rendering: pixelated;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+
+        .top-right-container {
+            flex: 2;
+            background: url('assets/card1.webp');
+            background-position: center;
+            background-repeat: no-repeat;
+            image-rendering: pixelated;
+            background-size: auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 0; 
+            gap: 0px;
+        }
+
+        .cat-container{
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex: 1;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 10px;
+        }
+
+        .cat-text-container{
+            height: fit-content;
+            flex: 1;
+            padding-top: 10px;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+
+        #cat-character {
+            width: 180px;
+            image-rendering: pixelated;
+            animation: hover-effect 2s infinite alternate ease-in-out;
+        }
+
+        @keyframes hover-effect {
+            from {
+                transform: translate(0, 10px);
+            }
+            to {
+                transform: translate(0, -10px);
+            }
+        }
+
+        .bottom-right-container {
+            flex: 1;
+            width: 100%;
+            background: url('assets/card2.webp');
+            background-position: center;
+            background-repeat: no-repeat;
+            image-rendering: pixelated;
+            background-size: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 20px;
+        }   
+
+        .heart-container {
+            width: 80%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .heart-img{
+            width: 44px;
+            height: 44px;
+            image-rendering: pixelated;
+        }
+
+        .time-score-container {
+            font-size: 14px;
+            width: 80%;
+            text-align: center;
+        }
+
+        .restart-button {
+            background-image: url('assets/button-normal.webp');
+            background-color: transparent;
+            color: #a69998;
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: none;
+            transition: all 0.1s ease-in-out;
+        }
+
+        .restart-button:hover {
+            background-image: url('assets/button-hover.webp');
+        }
+
+        .restart-button:active {
+            background-image: url('assets/button-pressed.webp');
+            transform: translateY(4px); 
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <div class="left-container"></div>
+        <div class="right-container">
+            <div class="top-right-container">
+                <div class="cat-container">
+                    <img id="cat-character" src="assets/cat.webp" alt="cat Character">
+                </div>
+                <div class="cat-text-container">i'll destroy you with my paw</div>
+            </div>
+            <div class="bottom-right-container">
+                <div class="heart-container"></div>
+                <div class="time-score-container"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
             const leftContainer = document.querySelector('.left-container');
             const heartContainer = document.querySelector('.heart-container');
             const timeScoreContainer = document.querySelector('.time-score-container');
@@ -12,7 +270,7 @@
             let pawAttackInterval;
             let dialogueInterval;
             let difficultyLevel = 0;
-            let currentAttackInterval = 1000;
+            let currentAttackInterval = 800;
             let isGameOver = false;
 
              const catDialogues = [
@@ -78,7 +336,7 @@
                 const seconds = (elapsedTime % 60).toString().padStart(2, '0');
                 timeScoreContainer.textContent = `Time Survived: ${minutes}:${seconds}`;
 
-                const newDifficultyLevel = Math.floor(elapsedTime / 30);
+                const newDifficultyLevel = Math.floor(elapsedTime / 20);
                 if (newDifficultyLevel > difficultyLevel) {
                     difficultyLevel = newDifficultyLevel;
                     console.log(`Difficulty increased to level ${difficultyLevel}`);
@@ -222,17 +480,31 @@
                         }
 
                         setTimeout(() => {
-                            const hit = attackedSquares.some(sq => sq.row === stickmanRow && sq.col === stickmanCol);
+                            let collisionCheckInterval;
 
-                            if (hit && !isGameOver) {
-                                playerLives--;
-                                drawHearts();
-                                if (playerLives <= 0) endGame();
-                            }
+                            collisionCheckInterval = setInterval(() => {
+                                if (isGameOver) {
+                                    clearInterval(collisionCheckInterval);
+                                    return;
+                                }
+
+                                const hit = attackedSquares.some(sq => sq.row === stickmanRow && sq.col === stickmanCol);
+
+                                if (hit && !isGameOver) {
+                                    playerLives--;
+                                    drawHearts();
+                                    if (playerLives <= 0) {
+                                        endGame();
+                                    }
+                                    clearInterval(collisionCheckInterval); 
+                                }
+                            }, 50); 
 
                             const randomStayDuration = Math.random() * 3000;
 
                             setTimeout(() => {
+                                clearInterval(collisionCheckInterval);
+                                
                                 if (attackDirection === 'top' || attackDirection === 'bottom') {
                                     pawArm.style.height = '0';
                                 } else {
@@ -241,7 +513,7 @@
                                 setTimeout(() => pawContainer.remove(), 200);
                             }, randomStayDuration);
 
-                        }, 120); 
+                        }, 120);      
 
                     }, 100); 
 
@@ -284,7 +556,7 @@
             function startGame(){
                 isGameOver = false; 
                 difficultyLevel = 0;
-                currentAttackInterval = 1000;
+                currentAttackInterval = 800;
                 playerLives = 3;
                 startTime = Date.now();
                 
@@ -311,4 +583,7 @@
             }
 
             startGame();
-        });</script>
+        });
+    </script>
+</body>
+</html>
