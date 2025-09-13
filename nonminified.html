@@ -273,7 +273,10 @@
             let currentAttackInterval = 800;
             let isGameOver = false;
 
-             const catDialogues = [
+            let recentSpawns = {};
+            const SPAWN_COOLDOWN = 1000;
+
+            const catDialogues = [
                 "Heh. Too slow.",
                 "Gonna getcha!",
                 "Nowhere to run!",
@@ -385,13 +388,36 @@
                 let attackRow, attackCol, attackLength;
                 const attackedSquares = [];
 
+                const maxAttempts = 10;
+                let attempts = 0;
+
                 switch(attackDirection) {
                     case 'right': case 'left':
-                        attackRow = Math.floor(Math.random() * gridRows);
+                        do {
+                            attackRow = Math.floor(Math.random() * gridRows);
+                            const key = `row-${attackRow}`;
+                            const lastSpawn = recentSpawns[key];
+                            if (!lastSpawn || Date.now() - lastSpawn > SPAWN_COOLDOWN) {
+                                recentSpawns[key] = Date.now();
+                                break;
+                            }
+                            attempts++;
+                        } while (attempts < maxAttempts);
+                        
                         attackLength = Math.floor(Math.random() * (gridCols - 2)) + 3;
                         break;
                     case 'top': case 'bottom':
-                        attackCol = Math.floor(Math.random() * gridCols);
+                        do {
+                            attackCol = Math.floor(Math.random() * gridCols);
+                            const key = `col-${attackCol}`;
+                            const lastSpawn = recentSpawns[key];
+                            if (!lastSpawn || Date.now() - lastSpawn > SPAWN_COOLDOWN) {
+                                recentSpawns[key] = Date.now();
+                                break;
+                            }
+                            attempts++;
+                        } while (attempts < maxAttempts);
+
                         attackLength = Math.floor(Math.random() * (gridRows - 2)) + 3;
                         break;
                 }
@@ -555,6 +581,7 @@
 
             function startGame(){
                 isGameOver = false; 
+                recentSpawns = {};
                 difficultyLevel = 0;
                 currentAttackInterval = 800;
                 playerLives = 3;
