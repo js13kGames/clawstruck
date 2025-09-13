@@ -12,10 +12,13 @@
             let pawAttackInterval;
             let dialogueInterval;
             let difficultyLevel = 0;
-            let currentAttackInterval = 1000;
+            let currentAttackInterval = 800;
             let isGameOver = false;
 
-             const catDialogues = [
+            let recentSpawns = {};
+            const SPAWN_COOLDOWN = 1000;
+
+            const catDialogues = [
                 "Heh. Too slow.",
                 "Gonna getcha!",
                 "Nowhere to run!",
@@ -78,7 +81,7 @@
                 const seconds = (elapsedTime % 60).toString().padStart(2, '0');
                 timeScoreContainer.textContent = `Time Survived: ${minutes}:${seconds}`;
 
-                const newDifficultyLevel = Math.floor(elapsedTime / 30);
+                const newDifficultyLevel = Math.floor(elapsedTime / 20);
                 if (newDifficultyLevel > difficultyLevel) {
                     difficultyLevel = newDifficultyLevel;
                     console.log(`Difficulty increased to level ${difficultyLevel}`);
@@ -127,13 +130,36 @@
                 let attackRow, attackCol, attackLength;
                 const attackedSquares = [];
 
+                const maxAttempts = 10;
+                let attempts = 0;
+
                 switch(attackDirection) {
                     case 'right': case 'left':
-                        attackRow = Math.floor(Math.random() * gridRows);
+                        do {
+                            attackRow = Math.floor(Math.random() * gridRows);
+                            const key = `row-${attackRow}`;
+                            const lastSpawn = recentSpawns[key];
+                            if (!lastSpawn || Date.now() - lastSpawn > SPAWN_COOLDOWN) {
+                                recentSpawns[key] = Date.now();
+                                break;
+                            }
+                            attempts++;
+                        } while (attempts < maxAttempts);
+                        
                         attackLength = Math.floor(Math.random() * (gridCols - 2)) + 3;
                         break;
                     case 'top': case 'bottom':
-                        attackCol = Math.floor(Math.random() * gridCols);
+                        do {
+                            attackCol = Math.floor(Math.random() * gridCols);
+                            const key = `col-${attackCol}`;
+                            const lastSpawn = recentSpawns[key];
+                            if (!lastSpawn || Date.now() - lastSpawn > SPAWN_COOLDOWN) {
+                                recentSpawns[key] = Date.now();
+                                break;
+                            }
+                            attempts++;
+                        } while (attempts < maxAttempts);
+
                         attackLength = Math.floor(Math.random() * (gridRows - 2)) + 3;
                         break;
                 }
@@ -222,17 +248,31 @@
                         }
 
                         setTimeout(() => {
-                            const hit = attackedSquares.some(sq => sq.row === stickmanRow && sq.col === stickmanCol);
+                            let collisionCheckInterval;
 
-                            if (hit && !isGameOver) {
-                                playerLives--;
-                                drawHearts();
-                                if (playerLives <= 0) endGame();
-                            }
+                            collisionCheckInterval = setInterval(() => {
+                                if (isGameOver) {
+                                    clearInterval(collisionCheckInterval);
+                                    return;
+                                }
+
+                                const hit = attackedSquares.some(sq => sq.row === stickmanRow && sq.col === stickmanCol);
+
+                                if (hit && !isGameOver) {
+                                    playerLives--;
+                                    drawHearts();
+                                    if (playerLives <= 0) {
+                                        endGame();
+                                    }
+                                    clearInterval(collisionCheckInterval); 
+                                }
+                            }, 50); 
 
                             const randomStayDuration = Math.random() * 3000;
 
                             setTimeout(() => {
+                                clearInterval(collisionCheckInterval);
+                                
                                 if (attackDirection === 'top' || attackDirection === 'bottom') {
                                     pawArm.style.height = '0';
                                 } else {
@@ -241,7 +281,7 @@
                                 setTimeout(() => pawContainer.remove(), 200);
                             }, randomStayDuration);
 
-                        }, 120); 
+                        }, 120);      
 
                     }, 100); 
 
@@ -283,8 +323,9 @@
 
             function startGame(){
                 isGameOver = false; 
+                recentSpawns = {};
                 difficultyLevel = 0;
-                currentAttackInterval = 1000;
+                currentAttackInterval = 800;
                 playerLives = 3;
                 startTime = Date.now();
                 
