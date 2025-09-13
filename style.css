@@ -154,6 +154,7 @@ body {
     align-items: center;
     padding: 0 10px;
     flex-shrink: 0;
+    text-align: center;
 }
 
 
@@ -204,51 +205,27 @@ body {
 .time-score-container {
     font-size: 14px;
     width: 80%
+    text-align: center;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-.background-top {
-    /* height: 50vh; 
-    width: 100vw;
-    background: 
-        url('assets/background/awan1.webp'),
-        #31293e;
-    
-    background-size: cover, cover;
-    background-position: center center, center center;
-    background-repeat: no-repeat, no-repeat;
-    image-rendering: pixelated, pixelated; */
-
-    /* background-color: #31293e;  */
-    /* background-image: linear-gradient(to top, #432142, #55486b); */
-    /* background-image: 
-        url('assets/background/2.webp'),
-        url('assets/background/1.webp'); 
-    background-size: cover, cover;
-    background-position: center top, center center;
-    background-repeat: no-repeat, no-repeat;
-    image-rendering: pixelated, pixelated; */
+.restart-button {
+    background-color: #4a4158;
+    color: #a2999e;
+    border: 2px solid #2d1b27;
+    padding: 10px 20px;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0px #2d1b27;
+    transition: all 0.1s ease-in-out;
 }
 
+.restart-button:hover {
+    background-color: #5f575e;
+}
 
-.bottom-ground {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 50vh;
-    background-color: #808080; /* Warna abu-abu standar */
-    z-index: 2;
-    border: 48px solid #5f575e; /* Garis tepi abu-abu gelap */
-    box-sizing: border-box; /* Memastikan border tidak menambah ukuran elemen */
+.restart-button:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0px 0px 0px #2d1b27;
 }
